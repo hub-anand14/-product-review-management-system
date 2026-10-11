@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../services/api';
+import ErrorMessage from '../components/ErrorMessage';
 
 function Register({ setUser }) {
   const [name, setName] = useState('');
@@ -13,7 +14,7 @@ function Register({ setUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) {
-      setError("Please fill in all fields");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -45,7 +46,7 @@ function Register({ setUser }) {
     <div className="auth-page">
       <div className="auth-card">
         <h2>Create an Account</h2>
-        {error && <div className="error-message">{error}</div>}
+        {error && <ErrorMessage compact message={error} />}
         
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

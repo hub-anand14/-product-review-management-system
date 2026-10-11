@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { createProduct, updateProduct, getProductById } from '../services/api';
 import { ArrowLeft } from 'lucide-react';
+import ErrorMessage from '../components/ErrorMessage';
 
 function ProductForm() {
   const { id } = useParams();
@@ -16,29 +17,33 @@ function ProductForm() {
   });
   
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(isEditing);
   const [error, setError] = useState(null);
+
+  const fetchProduct = useCallback(async () => {
+    try {
+      setInitialLoading(true);
+      setError(null);
+      const product = await getProductById(id);
+      setFormData({
+        name: product.name || '',
+        category: product.category || '',
+        price: product.price || '',
+        description: product.description || ''
+      });
+    } catch (err) {
+      console.error("Failed to load product for editing:", err);
+      setError(err.message || "Failed to load product for editing.");
+    } finally {
+      setInitialLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (isEditing) {
-      const fetchProduct = async () => {
-        try {
-          setLoading(true);
-          const product = await getProductById(id);
-          setFormData({
-            name: product.name || '',
-            category: product.category || '',
-            price: product.price || '',
-            description: product.description || ''
-          });
-        } catch (err) {
-          setError("Failed to load product for editing.");
-        } finally {
-          setLoading(false);
-        }
-      };
       fetchProduct();
     }
-  }, [id, isEditing]);
+  }, [isEditing, fetchProduct]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +78,41 @@ function ProductForm() {
     }
   };
 
+  if (isEditing && initialLoading && !error && !formData.name) {
+    return (
+      <div className="form-page">
+        <Link to="/admin" className="back-link">
+          <ArrowLeft size={16} /> Back to Dashboard
+        </Link>
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isEditing && error && !formData.name) {
+    return (
+      <div className="form-page">
+        <Link to="/admin" className="back-link">
+          <ArrowLeft size={16} /> Back to Dashboard
+        </Link>
+        <ErrorMessage
+          title="Unable to Load Product"
+          message={error}
+          onRetry={fetchProduct}
+          isRetrying={initialLoading}
+          action={
+            <Link to="/admin" className="btn-secondary">
+              Back to Dashboard
+            </Link>
+          }
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="form-page">
       <Link to="/admin" className="back-link">
@@ -82,7 +122,13 @@ function ProductForm() {
       <div className="form-card">
         <h2>{isEditing ? 'Edit Product' : 'Add New Product'}</h2>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <ErrorMessage 
+            compact 
+            message={error} 
+            className="form-error-banner"
+          />
+        )}
         
         <form onSubmit={handleSubmit} className="admin-form">
           <div className="form-group">

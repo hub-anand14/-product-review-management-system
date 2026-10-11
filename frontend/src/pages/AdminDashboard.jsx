@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, Plus } from 'lucide-react';
 import { getProducts, deleteProduct } from '../services/api';
+import ErrorMessage from '../components/ErrorMessage';
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
@@ -15,7 +16,8 @@ function AdminDashboard() {
       setProducts(data);
       setError(null);
     } catch (err) {
-      setError("Could not load products.");
+      console.error("Error loading products in admin:", err);
+      setError(err.message || "Could not load products.");
     } finally {
       setLoading(false);
     }
@@ -36,7 +38,7 @@ function AdminDashboard() {
     }
   };
 
-  if (loading) {
+  if (loading && !error && products.length === 0) {
     return (
       <div className="loading-state">
         <div className="spinner"></div>
@@ -54,50 +56,68 @@ function AdminDashboard() {
         </Link>
       </div>
       
-      {error && <div className="error-message">{error}</div>}
+      {error && products.length === 0 ? (
+        <ErrorMessage
+          title="Unable to Load Products"
+          message={error}
+          onRetry={fetchProducts}
+          isRetrying={loading}
+        />
+      ) : (
+        <>
+          {error && (
+            <ErrorMessage
+              compact
+              message={error}
+              onRetry={fetchProducts}
+              isRetrying={loading}
+            />
+          )}
 
-      <div className="admin-stats">
-        <div className="stat-card">
-          <h3>Total Products</h3>
-          <p className="stat-value">{products.length}</p>
-        </div>
-      </div>
+          <div className="admin-stats">
+            <div className="stat-card">
+              <h3>Total Products</h3>
+              <p className="stat-value">{products.length}</p>
+            </div>
+          </div>
 
-      <div className="table-container">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.length === 0 ? (
-              <tr>
-                <td colSpan="4" style={{textAlign: 'center', padding: '2rem'}}>No products found.</td>
-              </tr>
-            ) : (
-              products.map(product => (
-                <tr key={product._id}>
-                  <td>{product.name}</td>
-                  <td>{product.category}</td>
-                  <td>${Number(product.price).toFixed(2)}</td>
-                  <td className="table-actions">
-                    <Link to={`/admin/products/${product._id}/edit`} className="btn-icon" title="Edit">
-                      <Edit size={16} />
-                    </Link>
-                    <button className="btn-icon text-danger" onClick={() => handleDelete(product._id)} title="Delete">
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
+          <div className="table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Actions</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {products.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>No products found.</td>
+                  </tr>
+                ) : (
+                  products.map(product => (
+                    <tr key={product._id}>
+                      <td>{product.name}</td>
+                      <td>{product.category}</td>
+                      <td>${Number(product.price).toFixed(2)}</td>
+                      <td className="table-actions">
+                        <Link to={`/admin/products/${product._id}/edit`} className="btn-icon" title="Edit">
+                          <Edit size={16} />
+                        </Link>
+                        <button className="btn-icon text-danger" onClick={() => handleDelete(product._id)} title="Delete">
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }
