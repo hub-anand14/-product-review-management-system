@@ -5,15 +5,6 @@ import Product from '../models/Product.js';
 
 dotenv.config();
 
-/**
- * Sample products conforming strictly to the Product model schema:
- * - name (String, required, min 2)
- * - category (String, required, min 2)
- * - price (Number, required, min 0)
- * - description (String, required, min 5)
- * - averageRating (Number, default 0)
- * - numReviews (Number, default 0)
- */
 const sampleProducts = [
   {
     name: 'Wireless Noise-Canceling Headphones',
@@ -41,11 +32,6 @@ const sampleProducts = [
   },
 ];
 
-/**
- * Safe development-only seed script.
- * Inserts sample products without deleting existing data.
- * Checks for existing products by name to prevent duplicate entries when run multiple times.
- */
 const seedProducts = async () => {
   try {
     await connectDB();
