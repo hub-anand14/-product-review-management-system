@@ -114,10 +114,11 @@ VITE_API_URL=http://localhost:5000
 
 ## 📸 Screenshots
 
-Add project screenshots here after development.
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/2ddb9856-c023-462d-908c-3f5bbdc73681" />
+
 
 ## 🌐 Deployment Links
 
-- **GitHub:** YOUR_GITHUB_REPOSITORY_URL
-- **Frontend:** YOUR_VERCEL_URL
-- **Backend:** YOUR_RENDER_URL
+- **GitHub:https://github.com/hub-anand14/-product-review-management-system.git
+- **Frontend: https://product-review-management-system-8wzhdctt4.vercel.app/
+- **Backend: https://product-review-management-system.onrender.com
