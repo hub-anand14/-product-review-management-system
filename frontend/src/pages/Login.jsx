@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/api';
+import ErrorMessage from '../components/ErrorMessage';
 
 function Login({ setUser }) {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ function Login({ setUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -42,7 +43,7 @@ function Login({ setUser }) {
     <div className="auth-page">
       <div className="auth-card">
         <h2>Welcome Back</h2>
-        {error && <div className="error-message">{error}</div>}
+        {error && <ErrorMessage compact message={error} />}
         
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import ErrorMessage from '../components/ErrorMessage';
 import { getProducts } from '../services/api';
 
 function Home() {
@@ -13,22 +14,22 @@ function Home() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [sortBy, setSortBy] = useState('');
 
-  // Fetch products on component mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await getProducts();
-        setProducts(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-        setError("Could not load products. Please ensure the backend is running.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch products on component mount or retry
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const data = await getProducts();
+      setProducts(data);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setError(err.message || "Could not load products. Please ensure the backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -106,16 +107,18 @@ function Home() {
         </div>
       </div>
 
-      {loading ? (
+      {loading && !error ? (
         <div className="loading-state">
           <div className="spinner"></div>
           <p>Loading products...</p>
         </div>
       ) : error ? (
-        <div className="error-state">
-          <h3>Oops!</h3>
-          <p>{error}</p>
-        </div>
+        <ErrorMessage
+          title="Unable to Load Products"
+          message={error}
+          onRetry={fetchProducts}
+          isRetrying={loading}
+        />
       ) : filteredProducts.length === 0 ? (
         <div className="empty-state">
           <h3>No products found</h3>

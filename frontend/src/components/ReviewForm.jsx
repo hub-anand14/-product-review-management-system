@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { createReview, updateReview } from '../services/api';
+import ErrorMessage from './ErrorMessage';
 
 function ReviewForm({ productId, existingReview, onSuccess, onCancel }) {
   const [rating, setRating] = useState(5);
@@ -46,7 +47,7 @@ function ReviewForm({ productId, existingReview, onSuccess, onCancel }) {
   return (
     <div className="review-form-container">
       <h3>{existingReview ? 'Edit Your Review' : 'Write a Review'}</h3>
-      {error && <div className="error-message">{error}</div>}
+      {error && <ErrorMessage compact message={error} />}
       
       <form onSubmit={handleSubmit} className="review-form">
         <div className="rating-select">

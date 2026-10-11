@@ -1,22 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { Star, ArrowLeft, Trash2, Edit } from 'lucide-react';
 import { getProductById, getProductReviews, deleteReview } from '../services/api';
 import ReviewForm from '../components/ReviewForm';
+import ErrorMessage from '../components/ErrorMessage';
 
 function ProductDetails({ user }) {
   const { id } = useParams();
-  const navigate = useNavigate();
   
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviewsError, setReviewsError] = useState(null);
   
   // Review editing state
   const [editingReview, setEditingReview] = useState(null);
 
-  const fetchProductData = async () => {
+  const fetchProductData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -24,22 +25,35 @@ function ProductDetails({ user }) {
       setProduct(productData);
       
       try {
+        setReviewsError(null);
         const reviewsData = await getProductReviews(id);
         setReviews(reviewsData || []);
       } catch (revErr) {
-        console.error("Could not fetch reviews", revErr);
-        // We don't fail the whole page if just reviews fail, but we'll show an empty list.
+        console.error("Could not fetch reviews:", revErr);
+        setReviewsError("Unable to load reviews right now.");
       }
     } catch (err) {
-      setError("Product not found or backend unavailable.");
+      console.error("Could not fetch product details:", err);
+      setError(err.message || "Product not found or backend unavailable.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchProductData();
-  }, [id]);
+  }, [fetchProductData]);
+
+  const fetchReviewsOnly = async () => {
+    try {
+      setReviewsError(null);
+      const reviewsData = await getProductReviews(id);
+      setReviews(reviewsData || []);
+    } catch (revErr) {
+      console.error("Could not fetch reviews on retry:", revErr);
+      setReviewsError("Unable to load reviews right now.");
+    }
+  };
 
   const handleDeleteReview = async (reviewId) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
@@ -52,7 +66,7 @@ function ProductDetails({ user }) {
     }
   };
 
-  if (loading) {
+  if (loading && !error && !product) {
     return (
       <div className="loading-state">
         <div className="spinner"></div>
@@ -63,10 +77,21 @@ function ProductDetails({ user }) {
 
   if (error || !product) {
     return (
-      <div className="error-state">
-        <h3>Error</h3>
-        <p>{error}</p>
-        <Link to="/" className="btn-secondary" style={{marginTop: '1rem', display: 'inline-block'}}>Go Back</Link>
+      <div className="product-details-page">
+        <Link to="/" className="back-link">
+          <ArrowLeft size={16} /> Back to Products
+        </Link>
+        <ErrorMessage
+          title="Unable to Load Product"
+          message={error || "We couldn't find the product you're looking for or the server is unavailable."}
+          onRetry={fetchProductData}
+          isRetrying={loading}
+          action={
+            <Link to="/" className="btn-secondary">
+              Back to Products
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -118,8 +143,17 @@ function ProductDetails({ user }) {
           </div>
         )}
 
+        {reviewsError && (
+          <ErrorMessage
+            compact
+            message={reviewsError}
+            onRetry={fetchReviewsOnly}
+            className="reviews-error-banner"
+          />
+        )}
+
         <div className="reviews-list">
-          {reviews.length === 0 ? (
+          {reviews.length === 0 && !reviewsError ? (
             <p className="no-reviews">No reviews yet. Be the first to review this product!</p>
           ) : (
             reviews.map(review => {

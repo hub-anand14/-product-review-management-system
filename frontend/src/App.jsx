@@ -17,7 +17,7 @@ function App() {
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
-      } catch (e) {
+      } catch {
         localStorage.removeItem('user');
       }
     }
@@ -61,7 +61,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <p>&copy; {new Date().getFullYear()} ReviewHub. All rights reserved.</p>
+        <p>&copy; 2026 ReviewHub. All rights reserved.</p>
       </footer>
     </div>
   );
