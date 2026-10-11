@@ -11,7 +11,6 @@ import { authenticateUser, requireAdmin } from '../middleware/authMiddleware.js'
 
 const router = express.Router();
 
-// Forward review routes for a product: /api/products/:productId/reviews
 router.use('/:productId/reviews', productReviewRoutes);
 
 router.route('/')

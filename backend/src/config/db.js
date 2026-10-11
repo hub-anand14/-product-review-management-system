@@ -3,10 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-/**
- * Connect to MongoDB instance using Mongoose.
- * Sanitizes logging to ensure credentials are never exposed in terminal or logs.
- */
 export const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGO_URI;
@@ -19,7 +15,6 @@ export const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error(`[MongoDB Connection Error] ${error.message}`);
-    // If running in production or standard server mode, exit process
     if (process.env.NODE_ENV !== 'test') {
       process.exit(1);
     }

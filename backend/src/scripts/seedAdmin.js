@@ -5,17 +5,8 @@ import User from '../models/User.js';
 
 dotenv.config();
 
-/**
- * CLI script to safely seed an initial administrator account.
- * Reads credentials from environment variables or command-line flags.
- * Usage:
- *   ADMIN_NAME="Admin" ADMIN_EMAIL="admin@example.com" ADMIN_PASSWORD="SecretPassword123" npm run seed:admin
- *   OR:
- *   npm run seed:admin -- --email=admin@example.com --password=SecretPassword123 --name=Admin
- */
 const seedAdmin = async () => {
   try {
-    // Parse any CLI arguments like --email=... --password=...
     const args = process.argv.slice(2);
     const parsedArgs = {};
     for (const arg of args) {
@@ -47,7 +38,7 @@ const seedAdmin = async () => {
     if (adminUser) {
       adminUser.name = name;
       adminUser.role = 'admin';
-      adminUser.password = password; // Will be hashed by User pre-save hook
+      adminUser.password = password;
       await adminUser.save();
       console.log(`[Success] Existing user (${normalizedEmail}) updated to 'admin' role.`);
     } else {

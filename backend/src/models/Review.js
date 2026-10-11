@@ -35,10 +35,8 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-// Prevent a user from leaving multiple reviews on the same product
 reviewSchema.index({ productId: 1, user: 1 }, { unique: true });
 
-// Static method to calculate and persist average rating & review count on the Product
 reviewSchema.statics.calculateProductStats = async function (productId) {
   try {
     const objectId = typeof productId === 'string' ? new mongoose.Types.ObjectId(productId) : productId;
@@ -69,7 +67,6 @@ reviewSchema.statics.calculateProductStats = async function (productId) {
   }
 };
 
-// Update product rating after saving review
 reviewSchema.post('save', async function () {
   await this.constructor.calculateProductStats(this.productId);
 });

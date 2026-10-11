@@ -1,4 +1,5 @@
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
+const rawApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').trim().replace(/\/+$/, '');
+const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl}/api`;
 
 // Helper for making requests with authentication (to be used later when auth is implemented)
 async function fetchWithAuth(url, options = {}) {
@@ -50,7 +51,8 @@ export async function register(userData) {
 export async function getProducts() {
   const response = await fetch(`${API_URL}/products`);
   if (!response.ok) {
-    throw new Error('Failed to fetch products');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to fetch products');
   }
   return response.json();
 }

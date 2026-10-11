@@ -3,16 +3,9 @@ import { generateToken } from '../middleware/authMiddleware.js';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * @desc    Register a new user
- * @route   POST /api/auth/register
- * @access  Public
- */
 export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-
-    // Validate presence of required fields
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please provide name, email, and password' });
     }
@@ -32,13 +25,11 @@ export const registerUser = async (req, res, next) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
 
-    // Check for existing user with this email
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Security requirement: Public registration MUST ALWAYS assign role 'user'
     const user = await User.create({
       name: trimmedName,
       email: normalizedEmail,
@@ -62,11 +53,6 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Authenticate user & get token
- * @route   POST /api/auth/login
- * @access  Public
- */
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -77,7 +63,6 @@ export const loginUser = async (req, res, next) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Find user by normalized email
     const user = await User.findOne({ email: normalizedEmail });
 
     if (!user || !(await user.matchPassword(password))) {

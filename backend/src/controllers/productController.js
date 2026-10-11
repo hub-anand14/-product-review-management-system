@@ -2,11 +2,6 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 
-/**
- * @desc    Fetch all products
- * @route   GET /api/products
- * @access  Public
- */
 export const getProducts = async (req, res, next) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
@@ -16,11 +11,6 @@ export const getProducts = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Fetch single product by ID
- * @route   GET /api/products/:id
- * @access  Public
- */
 export const getProductById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -40,11 +30,6 @@ export const getProductById = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Create a product
- * @route   POST /api/products
- * @access  Private/Admin
- */
 export const createProduct = async (req, res, next) => {
   try {
     const { name, category, price, description } = req.body;
@@ -89,11 +74,6 @@ export const createProduct = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Update a product
- * @route   PUT /api/products/:id
- * @access  Private/Admin
- */
 export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -148,11 +128,6 @@ export const updateProduct = async (req, res, next) => {
   }
 };
 
-/**
- * @desc    Delete a product and all associated reviews
- * @route   DELETE /api/products/:id
- * @access  Private/Admin
- */
 export const deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -166,7 +141,6 @@ export const deleteProduct = async (req, res, next) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Cascade delete: Remove all associated reviews for consistency
     await Review.deleteMany({ productId: product._id });
     await product.deleteOne();
 

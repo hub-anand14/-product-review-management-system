@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-/**
- * Generate a signed JWT token for an authenticated user.
- */
 export const generateToken = (user) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is not configured in environment variables.');
@@ -15,9 +12,6 @@ export const generateToken = (user) => {
   );
 };
 
-/**
- * Protect routes: Authenticates user by Bearer token in Authorization header.
- */
 export const authenticateUser = async (req, res, next) => {
   let token;
 
@@ -45,9 +39,6 @@ export const authenticateUser = async (req, res, next) => {
   }
 };
 
-/**
- * Admin authorization check: Ensures the authenticated user has 'admin' role.
- */
 export const requireAdmin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     return next();
