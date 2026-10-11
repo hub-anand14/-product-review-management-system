@@ -117,6 +117,13 @@ VITE_API_URL=http://localhost:5000
 <img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/2ddb9856-c023-462d-908c-3f5bbdc73681" />
 
 
+**Admin Dashboard**
+
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/3bfafe58-730c-44ff-bf20-4b6bfcb1fed3" />
+
+
+
+
 ## 🌐 Deployment Links
 
 - **GitHub:https://github.com/hub-anand14/-product-review-management-system.git
