@@ -23,9 +23,9 @@ A full-stack web application where users can view products, submit reviews, and 
 
 | Member | Role |
 |---|---|
-| Your Name | Team Leader |
-| Member 2 Name | Frontend Developer |
-| Member 3 Name | Backend & Database Developer |
+| ANAND | Team Leader |
+| Member 2 Harshit | Frontend Developer |
+| Member 3 Pawan | Backend & Database Developer |
 
 ## 🗃️ Data Models
 
